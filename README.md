@@ -1,3 +1,5 @@
+**Обход блокировки протокола Wireguard на роутерах Keenetic**
+
 установить cron и nping:
 ```
 opkg update && opkg upgrade
