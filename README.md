@@ -8,14 +8,19 @@ opkg update && opkg upgrade
 opkg install cron nping
 ```
 
-В файле /opt/etc/crontab удалите неиспользуемые строки, нам нужна cron.1min:
+В файле `/opt/etc/crontab` закомментируйте неиспользуемые строки, оставив только `cron.1min`:
 ```
+SHELL=/bin/sh
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/bin:/opt/sbin
+MAILTO=""
+HOME=/
+# ---------- ---------- Default is Empty ---------- ---------- #
 */1 * * * * root /opt/bin/run-parts /opt/etc/cron.1min
-*/5 * * * * root /opt/bin/run-parts /opt/etc/cron.5mins
-01 * * * * root /opt/bin/run-parts /opt/etc/cron.hourly
-02 4 * * * root /opt/bin/run-parts /opt/etc/cron.daily
-22 4 * * 0 root /opt/bin/run-parts /opt/etc/cron.weekly
-42 4 1 * * root /opt/bin/run-parts /opt/etc/cron.monthly
+#*/5 * * * * root /opt/bin/run-parts /opt/etc/cron.5mins
+#01 * * * * root /opt/bin/run-parts /opt/etc/cron.hourly
+#02 4 * * * root /opt/bin/run-parts /opt/etc/cron.daily
+#22 4 * * 0 root /opt/bin/run-parts /opt/etc/cron.weekly
+#42 4 1 * * root /opt/bin/run-parts /opt/etc/cron.monthly
 ```
 
 Cоздаем [скрипт](https://github.com/Ground-Zerro/Wireguard-DPI-blocking-bypass/blob/main/pinger), например с именем `pinger` в папке `/opt/etc/cron.1min/`, который будет запускаться кроном каждую минуту.
@@ -25,6 +30,7 @@ Cоздаем [скрипт](https://github.com/Ground-Zerro/Wireguard-DPI-block
 1. порт удаленного пира
 2. адрес удаленного пира
 3. адрес который будет проверяться на доступность, обычно это шлюз внутри сети WG или другой
+- узнать шлюз, используемый WG можно выполнив трассировку до узла, пакеты к которому идут через WG подключение, напрмиер `traceroute 2ip.ru`
 
 Каждую минуту проверяется включен ли интерфейс nwgХ, если включен, то:
 - проверяется доступность указанного в gateX адреса,
@@ -33,7 +39,7 @@ Cоздаем [скрипт](https://github.com/Ground-Zerro/Wireguard-DPI-block
 - запускается пинговка 8 раз по UDP с нового порта на пир WG
 - на интерфейсе WG устанавливается новый порт.
 
-После создания файла дайте ему разрешения командой:
+После создания файла `pinger` дайте ему разрешения командой:
 ```
 chmod 755 /opt/etc/cron.1min/pinger
 ```
