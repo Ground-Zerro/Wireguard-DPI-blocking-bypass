@@ -23,7 +23,7 @@ HOME=/
 #42 4 1 * * root /opt/bin/run-parts /opt/etc/cron.monthly
 ```
 
-Создать [скрипт](https://github.com/Ground-Zerro/Wireguard-DPI-blocking-bypass/blob/main/pinger), с именем `pinger` в папке `/opt/etc/cron.1min/`, который будет запускаться кроном каждую минуту.
+Создать [скрипт](https://github.com/Ground-Zerro/Wireguard-DPI-blocking-bypass/blob/main/pinger), с именем `pinger` в папке `/opt/etc/cron.1min/`.
 
 Изменить в скрипте `pinger`:
 - в переменной `fey` указать номера интерфейсов WG в кавычках через пробел (не больше 5)
