@@ -77,4 +77,4 @@ chmod 755 /opt/etc/cron.1min/pinger
 `Usage: /opt/etc/init.d/S10cron (start|stop|restart|check|status|kill|reconfigure)`
 </details>
 
-### Основанно на идее [Frans](https://forum.keenetic.com/topic/19389-%D0%BE%D0%B1%D1%85%D0%BE%D0%B4-%D0%B1%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B8-%D0%BF%D1%80%D0%BE%D1%82%D0%BE%D0%BA%D0%BE%D0%BB%D0%B0-wireguard-%D0%BD%D0%B5-amneziawg/?do=findComment&comment=193421).
+### Идея - [Frans](https://forum.keenetic.com/topic/19389-%D0%BE%D0%B1%D1%85%D0%BE%D0%B4-%D0%B1%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B8-%D0%BF%D1%80%D0%BE%D1%82%D0%BE%D0%BA%D0%BE%D0%BB%D0%B0-wireguard-%D0%BD%D0%B5-amneziawg/?do=findComment&comment=193421).
