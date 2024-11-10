@@ -1,4 +1,4 @@
-## Обход блокировки протокола Wireguard на роутерах Keenetic
+## Обход блокировки протокола Wireguard и AmneziaWG на роутерах Keenetic.
 
 установить `cron` и `nping`:
 ```
@@ -8,7 +8,7 @@ opkg update && opkg upgrade
 opkg install cron nping
 ```
 
-В файле `/opt/etc/crontab` закомментируйте неиспользуемые строки, оставив только `cron.1min`:
+В файле `/opt/etc/crontab` закомментируйте неиспользуемые строки, для работы скрипта нужна `cron.1min`:
 ```
 SHELL=/bin/sh
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/opt/bin:/opt/sbin
