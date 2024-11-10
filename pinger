@@ -23,5 +23,5 @@ for i in $fey; do
         done
         nping --udp --count 9 --source-port $port --data-length 64 --dest-port ${gate% *} >/dev/null 2>&1
         ndmc -c "interface Wireguard$i wireguard listen-port $port" >/dev/null 2>&1
-  fi
+    fi
 done >/dev/null 2>&1
