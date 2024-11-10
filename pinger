@@ -1,8 +1,9 @@
 #!/bin/sh
 PATH=/opt/sbin:/opt/bin:/opt/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-fey="39"
+fey="39 44"
 gate39="33825 193.115.214.218 10.251.14.119"
+gate44="44569 96.112.125.108 46.163.88.20"
 
 gnip()
 {
