@@ -23,7 +23,7 @@ HOME=/
 #42 4 1 * * root /opt/bin/run-parts /opt/etc/cron.monthly
 ```
 
-В папке `/opt/etc/cron.1min/` создать скрипт (приложен к релизу) с именем `pinger`.
+В папке `/opt/etc/cron.1min/` создать [скрипт](https://github.com/Ground-Zerro/Wireguard-DPI-blocking-bypass/blob/main/pinger) с именем `pinger`.
 ```
 #!/bin/sh
 PATH=/opt/sbin:/opt/bin:/opt/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
