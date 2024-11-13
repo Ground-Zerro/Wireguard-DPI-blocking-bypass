@@ -1,27 +1,20 @@
 #!/bin/sh
 PATH=/opt/sbin:/opt/bin:/opt/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-fey="2 4 5"
-gate2="2408 162.159.193.5 172.16.0.1"
-gate4="2393 wg.vpn.org 191.225.216.1"
-gate5="51820 242.81.231.234 10.8.0.1"
-
 gnip()
 {
-! ping -I nwg$1 -s0 -qc1 -W1 $2 >/dev/null 2>&1
+! ping -I nwg$1 -s0 -qc1 -W1 1.1.1.1 >/dev/null 2>&1
 }
 
-for i in $fey; do
-    ip a s nwg$i | grep -q UP || continue
-    gate=$(eval echo \$gate$i)
-    pgat="$i ${gate##* }"
-    if gnip $pgat && gnip $pgat && gnip $pgat && gnip $pgat; then
-        port=$(awk 'BEGIN{srand();print int(rand()*63000)+2000}')
-        while netstat -nlu | grep -qw $port
-        do
-            port=$(awk 'BEGIN{srand();print int(rand()*63000)+2000}')
-        done
-        nping --udp --count 9 --source-port $port --data-length 64 --dest-port ${gate% *} >/dev/null 2>&1
-        ndmc -c "interface Wireguard$i wireguard listen-port $port" >/dev/null 2>&1
-    fi
-done >/dev/null 2>&1
+for i in $(ip a | sed -n 's/.*nwg\(.*\): <.*UP.*/\1/p'); do
+ rem=$(echo $(ndmc -c "show interface Wireguard$i" | sed -n 's/.*remote.*: \(.*\)/\1/p'))
+ echo $rem | grep -q '^0\| 0' && continue
+ if gnip $i && gnip $i && gnip $i && gnip $i; then
+  port=$(awk 'BEGIN{srand();print int(rand()*63000)+2000}')
+  while netstat -nlu | grep -qw $port; do
+   port=$(awk 'BEGIN{srand();print int(rand()*63000)+2000}')
+  done >/dev/null 2>&1
+  nping --udp --count 9 --source-port $port --data-length 64 --dest-port $(echo $rem | cut -f2 -d' ') ${rem%% *} >/dev/null 2>&1
+  ndmc -c "interface Wireguard$i wireguard listen-port $port" >/dev/null 2>&1
+ fi
+done
