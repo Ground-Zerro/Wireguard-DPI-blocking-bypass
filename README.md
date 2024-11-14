@@ -40,9 +40,9 @@ for i in $(ip a | sed -n 's/.*nwg\(.*\): <.*UP.*/\1/p'); do
         port=$(awk 'BEGIN{srand();print int(rand()*63000)+2000}')
         while netstat -nlu | grep -qw $port; do
             port=$(awk 'BEGIN{srand();print int(rand()*63000)+2000}')
-        done >/dev/null 2>&1
-        nping --udp --count 9 --source-port $port --data-length 64 --dest-port $(echo $rem | cut -f2 -d' ') ${rem%% *} >/dev/null 2>&1
-        ndmc -c "interface Wireguard$i wireguard listen-port $port" >/dev/null 2>&1
+    done >/dev/null 2>&1
+    nping --udp --count 9 --source-port $port --data-length 64 --dest-port $(echo $rem | cut -f2 -d' ') ${rem%% *} >/dev/null 2>&1
+    ndmc -c "interface Wireguard$i wireguard listen-port $port" >/dev/null 2>&1
     fi
 done
 ```
