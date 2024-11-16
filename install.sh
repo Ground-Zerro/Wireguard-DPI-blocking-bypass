@@ -2,34 +2,39 @@
 
 # Функция для получения списка интерфейсов WireGuard
 get_wireguard_interfaces() {
-    ip a | awk '/^[0-9]+: nwg/ {iface=$2} /inet / && iface {gsub(":", "", iface); print iface, $2}'
+    ip a | sed -n '/^[0-9]*: nwg/{h;n;s/.*inet \([0-9.]*\/[0-9]*\).*/\1/;x;s/:.*//;G;s/\n/ /p}'
 }
 
 # Функция отключения системного DNS-сервера роутера
-rci_post()($WGET -qO - --post-data="$1" localhost:79/rci/ > /dev/null 2>&1)
+rci_post() {
+    $WGET -qO - --post-data="$1" localhost:79/rci/ > /dev/null 2>&1
+}
 
-# Запрос выбора интерфейса WireGuard у пользователя
+# Функция выбора интерфейса WireGuard
 select_wireguard_interface() {
     echo "Поиск доступных WireGuard интерфейсов..."
     interfaces=$(get_wireguard_interfaces)
-    
+
     if [ -z "$interfaces" ]; then
         echo "Не найдено активных WireGuard интерфейсов."
         exit 1
     fi
 
-    echo "Доступные интерфейсы:"
-    echo "$interfaces" | awk '{print NR ". " $0}'
+    echo "Найдено $(echo "$interfaces" | wc -l) интерфейсов WireGuard."
+    echo "Введите номер интерфейса для использования:"
 
-    read -p "Введите номер интерфейса для использования: " choice
-    selected=$(echo "$interfaces" | sed -n "${choice}p")
+    # Формируем список для выбора
+    echo "$interfaces" | awk '{printf "%d. %s %s\n", NR, $1, $2}'
+
+    read -p "Ваш выбор: " choice
+    selected=$(echo "$interfaces" | awk -v num="$choice" 'NR == num {print $1}')
 
     if [ -z "$selected" ]; then
         echo "Неверный выбор. Завершение работы."
         exit 1
     fi
 
-    echo "$selected" | awk '{print $1}'
+    echo "$selected"
 }
 
 # Основная часть скрипта
@@ -39,7 +44,8 @@ opkg install adguardhome-go ipset iptables ip-full
 
 echo "Настройка AdGuard Home..."
 WGET='/opt/bin/wget -q --no-check-certificate'
-# Выполняем команду отключения DNS провайдера без перезагрузки и выхода из сессии
+
+# Выполняем команду отключения DNS провайдера
 curl -s "http://localhost:79/rci/opkg/dns-override" | grep -q true || {
     echo 'Отключаем работу через DNS-провайдера роутера...'
     echo "Возможно, что сейчас произойдет выход из сессии..."
