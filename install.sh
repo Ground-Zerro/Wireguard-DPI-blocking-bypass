@@ -2,11 +2,17 @@
 
 # Функция для получения списка интерфейсов WireGuard
 get_wireguard_interfaces() {
-    # Используем новый метод для поиска интерфейсов WireGuard
-    for i in $(ip a | sed -n 's/.*nwg\(.*\): <.*UP.*/\1/p'); do
-        rem=$(echo $(ndmc -c "show interface Wireguard$i" | sed -n 's/.*remote.*: \(.*\)/\1/p'))
-        echo $rem | grep -q '^0\| 0' && continue
-        echo "nwg$i"
+    # Получаем список интерфейсов WireGuard
+    interfaces=$(ip a | sed -n 's/.*nwg\(.*\): <.*UP.*/\1/p')
+
+    if [ -z "$interfaces" ]; then
+        echo "Не найдено активных WireGuard интерфейсов."
+        exit 1  # Завершаем выполнение всего скрипта при ошибке
+    fi
+
+    echo "Найдено $(echo "$interfaces" | wc -w) интерфейсов WireGuard."
+    for iface in $interfaces; do
+        echo "nwg$iface"
     done
 }
 
