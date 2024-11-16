@@ -1,54 +1,54 @@
 #!/bin/sh
 
-# Функция для получения списка интерфейсов WireGuard
+# Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ СЃРїРёСЃРєР° РёРЅС‚РµСЂС„РµР№СЃРѕРІ WireGuard
 get_wireguard_interfaces() {
     ip a | awk '/^[0-9]+: nwg/ {iface=$2} /inet / && iface {gsub(":", "", iface); print iface, $2}'
 }
 
-# Запрос выбора интерфейса WireGuard у пользователя
+# Р—Р°РїСЂРѕСЃ РІС‹Р±РѕСЂР° РёРЅС‚РµСЂС„РµР№СЃР° WireGuard Сѓ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 select_wireguard_interface() {
-    echo "Поиск доступных WireGuard интерфейсов..."
+    echo "РџРѕРёСЃРє РґРѕСЃС‚СѓРїРЅС‹С… WireGuard РёРЅС‚РµСЂС„РµР№СЃРѕРІ..."
     interfaces=$(get_wireguard_interfaces)
     
     if [ -z "$interfaces" ]; then
-        echo "Не найдено активных WireGuard интерфейсов."
+        echo "РќРµ РЅР°Р№РґРµРЅРѕ Р°РєС‚РёРІРЅС‹С… WireGuard РёРЅС‚РµСЂС„РµР№СЃРѕРІ."
         exit 1
     fi
 
-    echo "Доступные интерфейсы:"
+    echo "Р”РѕСЃС‚СѓРїРЅС‹Рµ РёРЅС‚РµСЂС„РµР№СЃС‹:"
     echo "$interfaces" | nl -w 2 -s '. '
 
-    read -p "Введите номер интерфейса для использования: " choice
+    read -p "Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ РёРЅС‚РµСЂС„РµР№СЃР° РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ: " choice
     selected=$(echo "$interfaces" | sed -n "${choice}p")
 
     if [ -z "$selected" ]; then
-        echo "Неверный выбор. Завершение работы."
+        echo "РќРµРІРµСЂРЅС‹Р№ РІС‹Р±РѕСЂ. Р—Р°РІРµСЂС€РµРЅРёРµ СЂР°Р±РѕС‚С‹."
         exit 1
     fi
 
     echo "$selected" | awk '{print $1}'
 }
 
-# Основная часть скрипта
-echo "Установка необходимых пакетов..."
+# РћСЃРЅРѕРІРЅР°СЏ С‡Р°СЃС‚СЊ СЃРєСЂРёРїС‚Р°
+echo "РЈСЃС‚Р°РЅРѕРІРєР° РЅРµРѕР±С…РѕРґРёРјС‹С… РїР°РєРµС‚РѕРІ..."
 opkg update
 opkg install adguardhome-go ipset iptables ip-full
 
-echo "Настройка AdGuard Home..."
+echo "РќР°СЃС‚СЂРѕР№РєР° AdGuard Home..."
 opkg dns-override
 system configuration save
 
-# Получение интерфейса WireGuard
+# РџРѕР»СѓС‡РµРЅРёРµ РёРЅС‚РµСЂС„РµР№СЃР° WireGuard
 WG_INTERFACE=$(select_wireguard_interface)
 if [ -z "$WG_INTERFACE" ]; then
-    echo "Ошибка: не удалось определить интерфейс WireGuard."
+    echo "РћС€РёР±РєР°: РЅРµ СѓРґР°Р»РѕСЃСЊ РѕРїСЂРµРґРµР»РёС‚СЊ РёРЅС‚РµСЂС„РµР№СЃ WireGuard."
     exit 1
 fi
 
-echo "Выбран интерфейс WireGuard: $WG_INTERFACE"
+echo "Р’С‹Р±СЂР°РЅ РёРЅС‚РµСЂС„РµР№СЃ WireGuard: $WG_INTERFACE"
 
-# Создание скрипта для ipset
-echo "Создание скрипта для ipset..."
+# РЎРѕР·РґР°РЅРёРµ СЃРєСЂРёРїС‚Р° РґР»СЏ ipset
+echo "РЎРѕР·РґР°РЅРёРµ СЃРєСЂРёРїС‚Р° РґР»СЏ ipset..."
 cat << EOF > /opt/etc/init.d/S52ipset
 #!/bin/sh
 
@@ -62,8 +62,8 @@ if [ "\$1" = "start" ]; then
 fi
 EOF
 
-# Создание скриптов для маршрутов
-echo "Создание скриптов маршрутизации..."
+# РЎРѕР·РґР°РЅРёРµ СЃРєСЂРёРїС‚РѕРІ РґР»СЏ РјР°СЂС€СЂСѓС‚РѕРІ
+echo "РЎРѕР·РґР°РЅРёРµ СЃРєСЂРёРїС‚РѕРІ РјР°СЂС€СЂСѓС‚РёР·Р°С†РёРё..."
 cat << EOF > /opt/etc/ndm/ifstatechanged.d/010-bypass-table.sh
 #!/bin/sh
 
@@ -88,8 +88,8 @@ if [ -z "\$(ip -6 route list table 1001)" ]; then
 fi
 EOF
 
-# Создание скриптов для маркировки трафика
-echo "Создание скриптов для маркировки трафика..."
+# РЎРѕР·РґР°РЅРёРµ СЃРєСЂРёРїС‚РѕРІ РґР»СЏ РјР°СЂРєРёСЂРѕРІРєРё С‚СЂР°С„РёРєР°
+echo "РЎРѕР·РґР°РЅРёРµ СЃРєСЂРёРїС‚РѕРІ РґР»СЏ РјР°СЂРєРёСЂРѕРІРєРё С‚СЂР°С„РёРєР°..."
 cat << EOF > /opt/etc/ndm/netfilter.d/010-bypass.sh
 #!/bin/sh
 
@@ -118,20 +118,20 @@ if [ -z "\$(ip6tables-save | grep bypass6)" ]; then
 fi
 EOF
 
-# Установка прав на выполнение скриптов
-echo "Установка прав на выполнение скриптов..."
+# РЈСЃС‚Р°РЅРѕРІРєР° РїСЂР°РІ РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ СЃРєСЂРёРїС‚РѕРІ
+echo "РЈСЃС‚Р°РЅРѕРІРєР° РїСЂР°РІ РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ СЃРєСЂРёРїС‚РѕРІ..."
 chmod +x /opt/etc/init.d/S52ipset
 chmod +x /opt/etc/ndm/ifstatechanged.d/010-bypass-table.sh
 chmod +x /opt/etc/ndm/ifstatechanged.d/011-bypass6-table.sh
 chmod +x /opt/etc/ndm/netfilter.d/010-bypass.sh
 chmod +x /opt/etc/ndm/netfilter.d/011-bypass6.sh
 
-# Настройка AdGuard Home
-echo "Настройка конфигурации AdGuard Home..."
+# РќР°СЃС‚СЂРѕР№РєР° AdGuard Home
+echo "РќР°СЃС‚СЂРѕР№РєР° РєРѕРЅС„РёРіСѓСЂР°С†РёРё AdGuard Home..."
 sed -i 's|ipset_file: ""|ipset_file: /opt/etc/AdGuardHome/ipset.conf|' /opt/etc/AdGuardHome/AdGuardHome.yaml
 
-# Перезапуск AdGuard Home
-echo "Перезапуск AdGuard Home..."
+# РџРµСЂРµР·Р°РїСѓСЃРє AdGuard Home
+echo "РџРµСЂРµР·Р°РїСѓСЃРє AdGuard Home..."
 /opt/etc/init.d/S99adguardhome restart
 
-echo "Скрипт выполнен. Добавьте домены в /opt/etc/AdGuardHome/ipset.conf и перезапустите AdGuard Home."
+echo "РЎРєСЂРёРїС‚ РІС‹РїРѕР»РЅРµРЅ. Р”РѕР±Р°РІСЊС‚Рµ РґРѕРјРµРЅС‹ РІ /opt/etc/AdGuardHome/ipset.conf Рё РїРµСЂРµР·Р°РїСѓСЃС‚РёС‚Рµ AdGuard Home."
