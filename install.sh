@@ -25,7 +25,7 @@ select_wireguard_interface() {
 
     if [ -z "$interfaces" ]; then
         echo "Не найдено активных WireGuard интерфейсов."
-        exit 1
+        exit 1  # Завершаем выполнение всего скрипта при ошибке
     fi
 
     echo "Найдено $(echo "$interfaces" | wc -l) интерфейсов WireGuard."
@@ -38,8 +38,8 @@ select_wireguard_interface() {
     selected=$(echo "$interfaces" | awk -v num="$choice" 'NR == num {print $1}')
 
     if [ -z "$selected" ]; then
-        echo "Неверный выбор. Завершение работы."
-        exit 1
+        echo "Неверный выбор. Завершаем выполнение скрипта."
+        exit 1  # Завершаем выполнение всего скрипта при ошибке
     fi
 
     echo "$selected"
@@ -66,7 +66,7 @@ curl -s "http://localhost:79/rci/opkg/dns-override" | grep -q true || {
 WG_INTERFACE=$(select_wireguard_interface)
 if [ -z "$WG_INTERFACE" ]; then
     echo "Ошибка: не удалось определить интерфейс WireGuard."
-    exit 1
+    exit 1  # Завершаем выполнение всего скрипта при ошибке
 fi
 
 echo "Выбран интерфейс WireGuard: $WG_INTERFACE"
