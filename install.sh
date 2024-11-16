@@ -8,7 +8,7 @@ get_wireguard_interfaces() {
             iface=$2;
             gsub(":", "", iface);
         }
-        $1 == "inet" {
+        $1 == "inet" && iface {
             print iface, $2;
         }' | grep -E '^nwg[0-9]+'
 }
