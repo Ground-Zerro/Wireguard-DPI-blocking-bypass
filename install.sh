@@ -3,7 +3,7 @@
 # Функция для получения списка интерфейсов WireGuard
 get_wireguard_interfaces() {
     # Получаем список интерфейсов WireGuard
-    interfaces=$(ip a | sed -n 's/.*nwg\(.*\): <.*UP.*/\1/p')
+    interfaces=$(ip a | sed -n 's/.*nwg\(.*\): <.*UP.*/nwg\1/p')
 
     if [ -z "$interfaces" ]; then
         echo "Не найдено активных WireGuard интерфейсов."
@@ -12,7 +12,7 @@ get_wireguard_interfaces() {
 
     echo "Найдено $(echo "$interfaces" | wc -w) интерфейсов WireGuard."
     for iface in $interfaces; do
-        echo "nwg$iface"
+        echo "$iface"
     done
 }
 
