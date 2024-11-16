@@ -2,7 +2,15 @@
 
 # Функция для получения списка интерфейсов WireGuard
 get_wireguard_interfaces() {
-    ip a | sed -n '/^[0-9]*: nwg/{h;n;s/.*inet \([0-9.]*\/[0-9]*\).*/\1/;x;s/:.*//;G;s/\n/ /p}'
+    # Получаем список интерфейсов WireGuard с их IP-адресами
+    ip a | awk '
+        /^[0-9]+: nwg/ {
+            iface=$2;
+            gsub(":", "", iface);
+        }
+        $1 == "inet" {
+            print iface, $2;
+        }' | grep -E '^nwg[0-9]+'
 }
 
 # Функция отключения системного DNS-сервера роутера
