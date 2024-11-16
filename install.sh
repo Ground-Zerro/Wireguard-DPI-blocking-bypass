@@ -2,15 +2,12 @@
 
 # Функция для получения списка интерфейсов WireGuard
 get_wireguard_interfaces() {
-    # Получаем список интерфейсов WireGuard с их IP-адресами
-    ip a | awk '
-        /^[0-9]+: nwg/ {
-            iface=$2;
-            gsub(":", "", iface);
-        }
-        $1 == "inet" && iface {
-            print iface, $2;
-        }' | grep -E '^nwg[0-9]+'
+    # Используем новый метод для поиска интерфейсов WireGuard
+    for i in $(ip a | sed -n 's/.*nwg\(.*\): <.*UP.*/\1/p'); do
+        rem=$(echo $(ndmc -c "show interface Wireguard$i" | sed -n 's/.*remote.*: \(.*\)/\1/p'))
+        echo $rem | grep -q '^0\| 0' && continue
+        echo "nwg$i"
+    done
 }
 
 # Функция отключения системного DNS-сервера роутера
@@ -32,7 +29,7 @@ select_wireguard_interface() {
     echo "Введите номер интерфейса для использования:"
 
     # Формируем список для выбора
-    echo "$interfaces" | awk '{printf "%d. %s %s\n", NR, $1, $2}'
+    echo "$interfaces" | awk '{printf "%d. %s\n", NR, $1}'
 
     read -p "Ваш выбор: " choice
     selected=$(echo "$interfaces" | awk -v num="$choice" 'NR == num {print $1}')
