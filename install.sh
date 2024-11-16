@@ -5,6 +5,9 @@ get_wireguard_interfaces() {
     ip a | awk '/^[0-9]+: nwg/ {iface=$2} /inet / && iface {gsub(":", "", iface); print iface, $2}'
 }
 
+# Функция отключения системного DNS-сервер роутера
+rci_post()($WGET -qO - --post-data="$1" localhost:79/rci/ > /dev/null 2>&1)
+
 # Запрос выбора интерфейса WireGuard у пользователя
 select_wireguard_interface() {
     echo "Поиск доступных WireGuard интерфейсов..."
@@ -34,10 +37,16 @@ echo "Установка необходимых пакетов..."
 opkg update
 opkg install adguardhome-go ipset iptables ip-full
 
-#echo "Настройка AdGuard Home..."
-# Отправить в CLI интерфейс:
-#dns-override
-#system configuration save
+echo "Настройка AdGuard Home..."
+WGET='/opt/bin/wget -q --no-check-certificate'
+# Вы полняем команду отключения DNS провайдера без перезагрузки и выхода из сессии
+curl -s "http://localhost:79/rci/opkg/dns-override" | grep -q true || {
+    echo 'Отключаем работу через DNS-провайдера  роутера...'
+    echo "Возможно, что сейчас произойдет выход из сессии..."
+    echo "В этом случае необходимо заново войти в сессию по ssh"
+    echo "и запустить скрипт заново"
+    rci_post '[{"opkg": {"dns-override": true}},{"system": {"configuration": {"save": true}}}]' &>/dev/null
+}
 
 # Получение интерфейса WireGuard
 WG_INTERFACE=$(select_wireguard_interface)
