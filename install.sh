@@ -34,9 +34,10 @@ echo "Установка необходимых пакетов..."
 opkg update
 opkg install adguardhome-go ipset iptables ip-full
 
-echo "Настройка AdGuard Home..."
-opkg dns-override
-system configuration save
+#echo "Настройка AdGuard Home..."
+# Отправить в CLI интерфейс:
+#dns-override
+#system configuration save
 
 # Получение интерфейса WireGuard
 WG_INTERFACE=$(select_wireguard_interface)
