@@ -42,3 +42,7 @@ done
 exit
 EOF
 chmod +x /opt/etc/ndm/netfilter.d/wgpass.sh
+
+echo "wg un.lock install complite."
+
+[ -f "$0" ] && rm "$0"
