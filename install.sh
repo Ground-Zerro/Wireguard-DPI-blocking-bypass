@@ -7,8 +7,6 @@ cat << 'EOF' > /opt/etc/ndm/netfilter.d/wgpass.sh
 #!/bin/sh
 PATH=/opt/sbin:/opt/bin:/opt/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-sleep 5
-
 LOCK="/dev/wgun.lock"
 
 if [ -e "$LOCK" ]; then
@@ -18,6 +16,8 @@ fi
 touch "$LOCK"
 
 trap "rm -f $LOCK" EXIT INT TERM
+
+sleep 5
 
 gnip()
 {
